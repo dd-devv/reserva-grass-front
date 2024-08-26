@@ -1,0 +1,491 @@
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
+import { GLOBAL } from 'src/app/services/global';
+import { GuestService } from 'src/app/services/guest.service';
+import { UserService } from 'src/app/services/user.service';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
+})
+export class HomeComponent implements OnInit {
+  //___
+  @ViewChild('masPopular', { static: true }) masPopularRef!: ElementRef;
+
+  scrollToMasPopular(): void {
+    this.masPopularRef.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }
+
+  //------------- se aumento
+  public searchOption: string = 'name';
+  //-----------
+  
+  ngOnInit(): void {
+    this._title.setTitle('Reserva tu Grass');
+  }
+
+  public empresa: any = {
+    region: '',
+    provincia: '',
+    distrito: '',
+  };
+
+  public token: any;
+  public id: any;
+  public user: any;
+  public user_lc: any;
+  public url: any;
+
+  public regiones: Array<any> = [];
+  public namereg = '';
+  public provincias: Array<any> = [];
+  public nameprov = '';
+  public distritos: Array<any> = [];
+
+  public provincias_arr: Array<any> = [];
+  public distritos_arr: Array<any> = [];
+
+  public empresas: Array<any> = [];
+  public caracteristicas: Array<any> = [];
+  public caracBuscada: Array<any> = [];
+  public busqueda = '';
+  public fecha = '';
+  public load_search = false;
+  public load_data = true;
+  public show_alert_void = false;
+  public show_alert_fecha = false;
+  public show_card_empresas = false;
+
+  public empresas_ubication: Array<any> = [];
+  public primeras_empresas: Array<any> = [];
+  public caracPrimeros: Array<any> = [];
+  public primerosBuscado: Array<any> = [];
+
+  public busqueda_ubication = '';
+  public load_search_ubication = false;
+  public load_data_ubication = true;
+  public show_alert_void_ubication = false;
+  public show_card_empresas_ubication = false;
+
+  isDisabledProvincia = true;
+  isDisabledDistrito = true;
+  public reviews: Array<any> = [];
+  public reviewsDestacados: Array<any> = [];
+  screenWidth: number = 0;
+  screenHeight: number = 0;
+
+  p: number = 1;
+
+  public imagen_fondo: String = '';
+  @ViewChild('textoAnimado') textoAnimado: any;
+  texto: string = '';
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.screenWidth = window.innerWidth;
+    this.screenHeight = window.innerHeight;
+  }
+
+  constructor(
+    private _router: Router,
+    private _title: Title,
+    private _guestService: GuestService,
+    private _userService: UserService
+  ) {
+    this.screenWidth = window.innerWidth;
+    this.screenHeight = window.innerHeight;
+
+    this.url = GLOBAL.url;
+    this.user_lc = undefined;
+
+    this._guestService.obtener_regiones().subscribe((response) => {
+      response.forEach((element: { id: any; name: any }) => {
+        this.regiones.push({
+          id: element.id,
+          name: element.name,
+        });
+      });
+    });
+
+    if (this.screenWidth < this.screenHeight) {
+      this.imagen_fondo = '../../../../assets/img/fondo-comentario.jpg';
+    } else {
+      this.imagen_fondo = '../../../../assets/img/fondo-coment.png';
+    }
+
+    this.token =
+      localStorage.getItem('token') || sessionStorage.getItem('token');
+    this.id = localStorage.getItem('_id') || sessionStorage.getItem('_id');
+
+    if (this.token) {
+      //Obtener usuario
+      this._userService
+        .obtener_user(this.id, this.token)
+        .subscribe((response) => {
+          if (response.data == undefined) {
+            _userService
+              .obtener_empresa(this.id, this.token)
+              .subscribe((response) => {
+                if (response.data == undefined) {
+                  this.user_lc = undefined;
+                } else {
+                  this.user = response.data;
+                  localStorage.setItem('user_data', JSON.stringify(this.user));
+
+                  if (localStorage.getItem('user_data')) {
+                    this.user_lc = JSON.parse(
+                      localStorage.getItem('user_data')!
+                    );
+
+                    if (this.user_lc.role == 'GRASS') {
+                      this._router.navigate(['/grass']);
+                    }
+                  } else {
+                    this.user_lc = undefined;
+                  }
+                }
+              });
+          } else {
+            this.user = response.data;
+            localStorage.setItem('user_data', JSON.stringify(this.user));
+
+            if (localStorage.getItem('user_data')) {
+              this.user_lc = JSON.parse(localStorage.getItem('user_data')!);
+
+              if (this.user_lc.role == 'ADMIN') {
+                this._router.navigate(['/admin']);
+              } else if (this.user_lc.role == 'USER') {
+                this._router.navigate(['/usuario']);
+              }
+            } else {
+              this.user_lc = undefined;
+            }
+          }
+        });
+    }
+
+    this.init_data();
+
+    _userService.listar_empresas_publico().subscribe((response) => {
+      if (response.data != undefined) {
+        this.primeras_empresas = response.data;
+
+        this._userService
+          .obtener_caracteristicas_empresa_publico()
+          .subscribe((response) => {
+            if (response.data != undefined) {
+              this.caracPrimeros = response.data;
+
+              for (let i = 0; i < this.primeras_empresas.length; i++) {
+                let idBuscado = this.primeras_empresas[i]._id;
+
+                for (let j = 0; j < this.caracPrimeros.length; j++) {
+                  if (idBuscado === this.caracPrimeros[j].empresa._id) {
+                    this.primerosBuscado[i] = this.caracPrimeros[j];
+                    idBuscado = '';
+                    break;
+                  } else {
+                    this.primerosBuscado[i] = null;
+                  }
+                }
+              }
+            }
+          });
+      } else {
+        this.primeras_empresas = [];
+      }
+    });
+  }
+
+  init_data() {
+    this.show_card_empresas = false;
+    this.show_alert_void = false;
+  }
+
+  buscarName() {
+    if (this.busqueda) {
+      this.show_alert_void = false;
+      this.load_search = true;
+      this.show_card_empresas = true;
+      this.show_card_empresas_ubication = false;
+      this.show_alert_void_ubication = false;
+      this.caracBuscada = [];
+      this.empresas = [];
+      this._userService
+        .listar_empresas_filtro(this.busqueda)
+        .subscribe((response) => {
+          if (response.data != undefined) {
+            this.empresas = response.data;
+            this.load_data = false;
+          } else {
+            this.show_alert_void = true;
+            this.show_card_empresas = false;
+          }
+
+          this._userService
+            .obtener_caracteristicas_empresa_publico()
+            .subscribe((response) => {
+              if (response.data != undefined) {
+                this.caracteristicas = response.data;
+
+                for (let i = 0; i < this.empresas.length; i++) {
+                  let idBuscado = this.empresas[i]._id;
+
+                  for (let j = 0; j < this.caracteristicas.length; j++) {
+                    if (idBuscado === this.caracteristicas[j].empresa._id) {
+                      this.caracBuscada[i] = this.caracteristicas[j];
+                      idBuscado = '';
+                      break;
+                    } else {
+                      this.caracBuscada[i] = null;
+                    }
+                  }
+                }
+              }
+            });
+
+          this.load_search = false;
+        });
+    }
+    if (this.busqueda == '') {
+      this.init_data();
+    }
+  }
+
+  buscarPorFechaHora() {
+    if (this.fecha) {
+      this.show_alert_void = false;
+      this.show_alert_fecha = false;
+      this.load_search = true;
+      this.show_card_empresas = true;
+      this.show_card_empresas_ubication = false;
+      this.show_alert_void_ubication = false;
+      this.caracBuscada = [];
+      this.empresas = [];
+  
+      // Convertir la fecha y hora a un formato que el backend pueda manejar
+      const fechaHora = new Date(this.fecha);
+      const fechaHoraFormateada = fechaHora.toISOString().slice(0, 16); // Formato: YYYY-MM-DDTHH:mm
+  
+      this._userService
+        .listar_empresas_con_hora_libre(fechaHoraFormateada)
+        .subscribe({
+          next: (response) => {
+            if (response.data != undefined) {
+              this.empresas = response.data;
+              this.load_data = false;
+            } else {
+              this.show_alert_fecha = true;
+              this.show_card_empresas = false;
+            }
+  
+            this._userService
+              .obtener_caracteristicas_empresa_publico()
+              .subscribe({
+                next: (response) => {
+                  if (response.data != undefined) {
+                    this.caracteristicas = response.data;
+  
+                    this.empresas.forEach((empresa, index) => {
+                      const caracteristica = this.caracteristicas.find(
+                        carac => carac.empresa._id === empresa._id
+                      );
+                      this.caracBuscada[index] = caracteristica || null;
+                    });
+                  }
+                }
+              });
+  
+            this.load_search = false;
+          }
+        });
+    } else {
+      this.init_data();
+    }
+  }
+
+  select_region() {
+    this.provincias = [];
+    this.distritos = [];
+    this.caracBuscada = [];
+    this.isDisabledProvincia = false;
+    this.isDisabledDistrito = true;
+    this.empresa.provincia = '';
+    this.nameprov = '';
+    this.empresa.distrito = '';
+    this.load_search_ubication = true;
+    this.busqueda = '';
+    this.init_data();
+    this._guestService.obtener_provincias().subscribe((response) => {
+      response.forEach((element: { department_id: any }) => {
+        if (element.department_id == this.empresa.region) {
+          this.provincias.push(element);
+        }
+      });
+    });
+
+    const regencontrado = this.regiones.find(
+      (objeto) => objeto.id === this.empresa.region
+    );
+
+    this.namereg = regencontrado.name;
+
+    this._userService
+      .listar_empresas_region(this.namereg)
+      .subscribe((response) => {
+        if (response.data != undefined) {
+          this.empresas_ubication = response.data;
+          this.show_card_empresas_ubication = true;
+          this.load_data_ubication = false;
+          this.show_alert_void_ubication = false;
+
+          this._userService
+            .obtener_caracteristicas_empresa_publico()
+            .subscribe((response) => {
+              if (response.data != undefined) {
+                this.caracteristicas = response.data;
+
+                for (let i = 0; i < this.empresas_ubication.length; i++) {
+                  let idBuscado = this.empresas_ubication[i]._id;
+
+                  for (let j = 0; j < this.caracteristicas.length; j++) {
+                    if (idBuscado === this.caracteristicas[j].empresa._id) {
+                      this.caracBuscada[i] = this.caracteristicas[j];
+                      idBuscado = '';
+                      break;
+                    } else {
+                      this.caracBuscada[i] = null;
+                    }
+                  }
+                }
+              }
+            });
+        } else {
+          this.show_alert_void_ubication = true;
+          this.show_card_empresas_ubication = false;
+        }
+
+        this.load_search_ubication = false;
+      });
+  }
+
+  select_provincia() {
+    this.distritos = [];
+    this.caracBuscada = [];
+    this.isDisabledDistrito = false;
+    this.empresa.distrito = '';
+    this._guestService.obtener_distritos().subscribe((response) => {
+      response.forEach((element: { province_id: any }) => {
+        if (element.province_id == this.empresa.provincia) {
+          this.distritos.push(element);
+        }
+      });
+    });
+
+    const provencontrado = this.provincias.find(
+      (objeto) => objeto.id === this.empresa.provincia
+    );
+
+    this.nameprov = provencontrado.name;
+
+    this._userService
+      .listar_empresas_prov(this.namereg, this.nameprov)
+      .subscribe((response) => {
+        if (response.data != undefined) {
+          this.empresas_ubication = [];
+          this.empresas_ubication = response.data;
+          this.show_card_empresas_ubication = true;
+          this.load_data_ubication = false;
+          this.show_alert_void_ubication = false;
+
+          this._userService
+            .obtener_caracteristicas_empresa_publico()
+            .subscribe((response) => {
+              if (response.data != undefined) {
+                this.caracteristicas = response.data;
+
+                for (let i = 0; i < this.empresas_ubication.length; i++) {
+                  let idBuscado = this.empresas_ubication[i]._id;
+
+                  for (let j = 0; j < this.caracteristicas.length; j++) {
+                    if (idBuscado === this.caracteristicas[j].empresa._id) {
+                      this.caracBuscada[i] = this.caracteristicas[j];
+                      idBuscado = '';
+                      break;
+                    } else {
+                      this.caracBuscada[i] = null;
+                    }
+                  }
+                }
+              }
+            });
+        } else {
+          this.show_alert_void_ubication = true;
+          this.show_card_empresas_ubication = false;
+        }
+
+        this.load_search_ubication = false;
+      });
+  }
+
+  select_distrito() {
+    this._userService
+      .listar_empresas_dist(this.namereg, this.nameprov, this.empresa.distrito)
+      .subscribe((response) => {
+        if (response.data != undefined) {
+          this.caracBuscada = [];
+          this.empresas_ubication = [];
+          this.empresas_ubication = response.data;
+          this.show_card_empresas_ubication = true;
+          this.load_data_ubication = false;
+          this.show_alert_void_ubication = false;
+
+          this._userService
+            .obtener_caracteristicas_empresa_publico()
+            .subscribe((response) => {
+              if (response.data != undefined) {
+                this.caracteristicas = response.data;
+
+                for (let i = 0; i < this.empresas_ubication.length; i++) {
+                  let idBuscado = this.empresas_ubication[i]._id;
+
+                  for (let j = 0; j < this.caracteristicas.length; j++) {
+                    if (idBuscado === this.caracteristicas[j].empresa._id) {
+                      this.caracBuscada[i] = this.caracteristicas[j];
+                      idBuscado = '';
+                      break;
+                    } else {
+                      this.caracBuscada[i] = null;
+                    }
+                  }
+                }
+              }
+            });
+        } else {
+          this.show_alert_void_ubication = true;
+          this.show_card_empresas_ubication = false;
+        }
+
+        this.load_search_ubication = false;
+      });
+  }
+
+  //------------se aumento
+  changeSearchOption(option: string) {
+    this.searchOption = option;
+    this.busqueda = '';
+    this.fecha = '';
+    this.init_data();
+  }
+}

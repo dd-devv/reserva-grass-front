@@ -1,0 +1,310 @@
+<app-nav></app-nav>
+
+
+<div class="container py-5">
+
+  <div class="shadow rounded mt-5 p-4">
+    <h3 class="text-center fw-bold" style="color:rgb(6, 170, 115)">
+      Reservaciones &nbsp;
+      <button *ngIf="activePagos && !viewButton" class="btn btn-primary" type="button"
+        [routerLink]="['/grass/reservaciones/crear']">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+    </h3>
+
+    <ng-container *ngIf="load_data">
+      <div class="text-center">
+        <div class="spinner-border text-secondary" style="width: 3rem; height: 3rem" role="status">
+        </div>
+        <h4 class="text-black-50"><small>Cargando...</small></h4>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="!activePagos && viewButton">
+      <div class="alert alert-danger text-center mt-4" role="alert">
+        Su suscripción está inactiva, para seguir usando nuestra plataforma, por favor renueve su suscripción!
+
+        <div class="d-grid gap-2 col-6 mx-auto my-3">
+          <button class="btn btn-danger" type="button" [routerLink]="['/grass/suscripcion']">Renovar
+            suscripción</button>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="activePagos && !viewButton">
+
+      <div>
+        <!-- Button addon on the right -->
+        <div class="input-group my-4">
+          <input class="form-control" type="text" placeholder="Filtrar por ID de reservación" name="filtro_cod"
+            autocomplete="off" [(ngModel)]="filtro_cod" (keyup)="filtrar_cod()">
+        </div>
+
+        <div class="rounded my-2" *ngIf="err_msg" style="background-color: rgb(255, 223, 223);">
+          <p class="text-center p-2 text-danger">ERROR: Ingrese el ID correctamente.</p>
+        </div>
+      </div>
+
+      <ng-container *ngIf="filtro && !err_msg">
+        <div class="card my-3" style="border-color: #00C056;">
+          <div class="card-body">
+            <div class="row">
+
+              <ng-container *ngIf="reservacion.estado == 'Reservado' || reservacion.estado == 'Finalizado'">
+                <div class="col-12 col-md-4">
+                  <div class="shadow rounded my-3">
+                    <div class="text-center">
+                      <qrcode style="width: 100vw;" [qrdata]="reservacion._id" [width]="200"
+                        [errorCorrectionLevel]="'M'">
+                      </qrcode>
+                      <p class="fw-light m-0"> {{ reservacion._id }} </p>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="reservacion.estado == 'Ocupado'">
+                <div class="col-12 col-md-4">
+                  <div class="shadow rounded my-3">
+                    <div class="text-center">
+
+                      <div class="spinner-grow text-info mt-4" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div> <br>
+
+                      <button type="button" class="btn btn-primary m-2" data-bs-toggle="modal"
+                        [attr.data-bs-target]="'#confirmar-' + reservacion._id">
+                        Confirmar &nbsp; <i class="bi bi-check-lg"></i>
+                      </button>
+                      <p class="fw-light m-0"> {{ reservacion._id }} </p>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <div class="col-12 col-md-8">
+                <table class="table table-sm">
+                  <tbody>
+                    <tr>
+                      <td><i class="bi bi-square icono"></i> &nbsp; {{ reservacion.cancha.nombre }}</td>
+                    </tr>
+                    <tr>
+                      <td><i class="bi bi-person icono"></i> &nbsp; {{ reservacion.cliente.nombres }}</td>
+                    </tr>
+                    <tr>
+                      <td colspan="2"><i class="bi bi-calendar-event icono"></i> &nbsp; {{ reservacion.fecha | date:
+                        'fullDate'
+                        }}</td>
+                    </tr>
+                    <tr>
+                      <td><i class="bi bi-clock icono"></i> &nbsp; {{reservacion.hora_inicio}}:00 a
+                        {{reservacion.hora_fin}}:00
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><i class="bi  bi-cash-coin icono"></i>
+                        &nbsp; S/. {{ reservacion.subtotal }} <small class="fw-light">(Monto de reservación)</small>
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+
+                <p class="fw-light m-0">Creación: {{ reservacion.createdAt | date: 'medium' }} </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal confirmar reserva -->
+        <div class="modal fade" id="confirmar-{{ reservacion._id }}" tabindex="-1" style="display: none"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title text-center">
+                  Confirmar reservación
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+              </div>
+              <div class="modal-body text-center">
+                Confirmar la reservación con código <span class="fw-bold">{{reservacion._id}}</span>?
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-light btn-sm bi-x-lg" type="button" data-bs-dismiss="modal">
+                </button>
+                <button *ngIf="!load_btn" class="btn btn-primary btn-sm" data-bs-dismiss="modal"
+                  (click)="confirmar_reservacion(reservacion._id)" type="button">
+                  <i class="bi bi-check-lg"></i> &nbsp;
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!load_data && reservaciones.length >= 1 && !filtro">
+        <div class="row">
+          <ng-container *ngFor="let item of reservacionesOcupadas | paginate: { itemsPerPage: 10, currentPage: p } ">
+            <div class="col-12 col-lg-6">
+              <div class="card my-3" style="border-color: #00C056;">
+                <div class="card-body">
+                  <div class="row">
+
+                    <ng-container *ngIf="item.estado == 'Reservado' || item.estado == 'Finalizado'">
+                      <div class="col-12 col-md-4">
+                        <div class="shadow rounded p-3">
+                          <div class="text-center">
+                            <qrcode style="width: 100vw;" [qrdata]="item._id" [width]="200"
+                              [errorCorrectionLevel]="'M'">
+                            </qrcode>
+                            <p class="fw-light px-3"> {{ item._id }} </p>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                    <ng-container *ngIf="item.estado == 'Ocupado'">
+                      <div class="col-12 col-md-4">
+                        <div class="shadow rounded my-3">
+                          <div class="text-center">
+
+                            <div class="spinner-grow text-info mt-4" style="width: 3rem; height: 3rem;" role="status">
+                              <span class="visually-hidden">Loading...</span>
+                            </div> <br>
+
+                            <button *ngIf="item.estado == 'Ocupado'" type="button" class="btn btn-primary m-2"
+                              data-bs-toggle="modal" [attr.data-bs-target]="'#confirmar-' + item._id">
+                              Confirmar &nbsp; <i class="bi bi-check-lg"></i>
+                            </button>
+                            <p class="fw-light m-0"> {{ item._id }} </p>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                    <!-- Modal confirmar reserva -->
+                    <div class="modal fade" id="confirmar-{{ item._id }}" tabindex="-1" style="display: none"
+                      aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h4 class="modal-title text-center">
+                              Confirmar reservación
+                            </h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            </button>
+                          </div>
+                          <div class="modal-body text-center">
+                            Confirmar la reservación con código <span class="fw-bold">{{item._id}}</span>?
+                          </div>
+                          <div class="modal-footer">
+                            <button class="btn btn-light btn-sm bi-x-lg" type="button" data-bs-dismiss="modal">
+                            </button>
+                            <button *ngIf="!load_btn" class="btn btn-primary btn-sm" data-bs-dismiss="modal"
+                              (click)="confirmar_reservacion(item._id)" type="button">
+                              <i class="bi bi-check-lg"></i> &nbsp;
+                              Confirmar
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-md-8">
+                      <table class="table table-sm">
+                        <tbody>
+                          <tr>
+                            <td><i class="bi bi-square icono"></i> &nbsp; {{ item.cancha.nombre }}</td>
+                          </tr>
+                          <tr>
+                            <td><i class="bi bi-person icono"></i> &nbsp; {{ item.cliente.nombres }}</td>
+                          </tr>
+                          <tr>
+                            <td colspan="2"><i class="bi bi-calendar-event icono"></i> &nbsp; {{ item.fecha | date:
+                              'fullDate'
+                              }}</td>
+                          </tr>
+                          <tr>
+                            <td><i class="bi bi-clock icono"></i> &nbsp; {{item.hora_inicio}}:00 a {{item.hora_fin}}:00
+                            </td>
+                          </tr>
+                          <tr>
+                            <td><i class="bi  bi-cash-coin icono"></i>
+                              &nbsp; S/. {{ item.subtotal }} <small class="fw-light">(Monto de reservación)</small>
+                            </td>
+                          </tr>
+
+                        </tbody>
+                      </table>
+
+                      <p class="fw-light m-0">Creación: {{ item.createdAt | date: 'medium' }} </p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="card-footer text-center">
+          <pagination-controls (pageChange)="p = $event" [responsive]="true" previousLabel="" nextLabel="">
+          </pagination-controls>
+        </div>
+      </ng-container>
+
+      <h4 class="mt-4 fw-bold text-center">Listado de reservaciones</h4>
+
+      <div class="table-responsive">
+        <table class="table table-sm table-striped table-hover">
+          <thead>
+            <tr>
+              <th scope="col">N°</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Teléfono</th>
+              <th scope="col">Monto</th>
+              <th scope="col">Cancha_reservada</th>
+              <th scope="col">Fecha_reserva</th>
+              <th scope="col">Hora_reservacion</th>
+              <th scope="col">Estado</th>
+            </tr>
+          </thead>
+
+          <tbody class="table-group-divider" *ngIf="!load_data">
+            <tr *ngFor="let item of reservacionesOtras; let i = index">
+              <th scope="row"> {{i+1}} </th>
+              <td> {{ item.cliente.nombres }} </td>
+              <td> {{ item.cliente.telefono }} </td>
+              <td> S/. {{item.subtotal}} </td>
+              <td> {{item.cancha.nombre}} </td>
+              <td> {{ item.fecha | date: 'mediumDate' }} </td>
+              <td> {{item.hora_inicio}}:00 a
+                {{item.hora_fin}}:00 </td>
+              <td>
+                <span *ngIf="item.estado == 'Reservado'" class="badge rounded-pill"
+                  style="background-color: rgb(0, 192, 86);">Reservado</span>
+                <span *ngIf="item.estado == 'Finalizado'" class="badge rounded-pill text-bg-danger">Finalizado</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div *ngIf="load_data" class="text-center">
+          <div class="spinner-border" style="width: 3rem; height: 3rem" role="status"></div>
+          <h5 class="text-black-50"><small>Cargando...</small></h5>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="!load_data && !exist_res">
+      <div class="alert alert-danger mt-3 mb-0 text-center" role="alert">
+        Aún no existen reservaciones
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+<nav class="navbar bg-body-tertiary" class="navbar navbar-expand-lg navbar-light fixed-top shadow text-center" style="
+background-color: rgba(255, 255, 255, 0.212);
+backdrop-filter: blur(10px);
+">
+    <div class="container-fluid container">
+        <a class="navbar-brand" [routerLink]="['/grass']">
+            <img src="../../../../assets/img/logo-header.png" alt="logo reserva tu grass" style="width: 130px;" />
+        </a>
+        <div class="btn-group">
+            <div *ngIf="user_lc != undefined">
+                <a type="button" class="dropdown-toggle fs-5 text-black-50" data-bs-toggle="dropdown"
+                    aria-expanded="false" style="text-decoration: none;">
+                    {{ user_lc.nombre }} <small class="text-success" style="font-size: 0.9rem;">
+                        (<i class="bi bi-key-fill"></i>)
+                    </small> &nbsp;
+                    <i class="bi bi-person-circle"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+
+                    <li class="nav-link p-2" [routerLink]="['/grass']" [routerLink]="['/grass']"
+                        routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i
+                            class="bi bi-house"></i> &nbsp; Inicio</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/datos']" routerLinkActive="active"><i
+                            class="bi bi-info-circle"></i> &nbsp; Mis datos</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/suscripcion']" routerLinkActive="active"><i
+                            class="bi bi-star"></i> &nbsp; Mi suscripción</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/caracteristicas']" routerLinkActive="active"><i
+                            class="bi bi-check2-circle"></i> &nbsp; Características</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/canchas']" routerLinkActive="active"><i
+                            class="bi bi-square"></i> &nbsp; Mis canchas</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/reservaciones']" routerLinkActive="active"><i
+                            class="bi bi-ticket-perforated"></i> &nbsp; Reservaciones</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/cuentas']" routerLinkActive="active"><i
+                            class="bi bi-credit-card-2-front"></i> &nbsp; Cuentas</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/clientes']" routerLinkActive="active"><i
+                            class="bi bi-person"></i> &nbsp; Clientes</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/contactar']" routerLinkActive="active"><i
+                            class="bi bi-chat-left"></i> &nbsp; Contactar</li>
+                    <li class="nav-link p-2" [routerLink]="['/grass/ayuda']" routerLinkActive="active"><i
+                            class="bi bi-lightbulb"></i> &nbsp; Ayuda</li>
+
+                    <li>
+                        <a class="dropdown-item text-danger" type="button" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" style="cursor: pointer">
+                            <i class="bi bi-arrow-bar-left"></i> &nbsp; Cerrar sesión
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Cerrar sesión?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <button type="button" class="btn btn-danger" (click)="logout()">
+                    <i class="bi bi-arrow-bar-left"></i> &nbsp; Cerrar sesión
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

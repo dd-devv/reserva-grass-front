@@ -1,0 +1,274 @@
+<app-nav></app-nav>
+
+
+<div class="container py-5">
+
+    <div class="shadow rounded mt-5 p-4">
+        <h3 class="text-center fw-bold">
+            <a [routerLink]="['/grass/canchas']">
+                <i class="text-info bi bi-arrow-left"></i>
+            </a> &nbsp; <span style="color:rgb(6, 170, 115)">
+                Galería de {{cancha.nombre}}
+            </span>
+        </h3>
+
+        <div class="border-bottom mt-4 mb-5">
+            <div class="d-flex flex-wrap flex-md-nowrap justify-content-between">
+                <div class="card-body">
+                    <div class="mx-sm-4 mx-0">
+
+                        <div class="w-100 mb-3">
+
+                            <!-- CARD DE CANCHA -->
+                            <div class="shadow card rounded my-4" style="border: 1px solid rgb(111, 66, 193);">
+                                <div class="card-body py-2 px-3">
+
+                                    <h4 class="text-center fw-bold">
+                                        <span *ngIf="cancha.tipo == 'Fútbol/Futsal'" class="fw-light h6"
+                                            style="color: rgb(0, 192, 86);">
+                                            {{cancha.tipo}}
+                                        </span>
+
+                                        <span *ngIf="cancha.tipo == 'Voley'" class="fw-light h6"
+                                            style="color: rgb(241, 78, 143);">{{cancha.tipo}}
+                                        </span>
+
+                                        <span *ngIf="cancha.tipo == 'Mixto'" class="fw-light h6"
+                                            style="color: rgb(122, 78, 241);">{{cancha.tipo}}
+                                        </span>
+                                    </h4>
+
+                                    <!--? El tipo es futsal o voley -->
+                                    <div class="row" *ngIf="cancha.tipo != 'Mixto'">
+                                        <div class="col-12 fw-light" style="text-align: justify;">
+                                            {{cancha.descripcion}}
+                                        </div>
+
+                                        <div class="col-12 col-sm-4 py-3">
+                                            <span class="fw-bold h6">Medida: </span> <span> {{cancha.largo}}m x
+                                                {{cancha.ancho}}m </span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4 py-3">
+                                            <span class="fw-bold h6">Precio de día: </span> <span> S/.
+                                                {{cancha.precio_dia}} </span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4 py-3">
+                                            <span class="fw-bold h6">Precio de noche: </span> <span> S/.
+                                                {{cancha.precio_noche}} </span>
+                                        </div>
+                                    </div>
+
+                                    <!--? El tipo es mixto (futsal/voley) -->
+                                    <div class="row pb-3" *ngIf="cancha.tipo == 'Mixto'">
+                                        <div class="col-12 fw-light" style="text-align: justify;">
+                                            {{cancha.descripcion}}
+                                        </div>
+
+                                        <!-- futsal -->
+                                        <div class="col-12 pt-3">
+                                            <span class="futsal fw-light">Detalles de futsal/fútbol</span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <span class="fw-bold h6">Medida: </span> <span> {{cancha.largo}}m
+                                                x {{cancha.ancho}}m </span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <span class="fw-bold h6">Precio de día:</span> <span> S/.
+                                                {{cancha.precio_dia}} </span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <span class="fw-bold h6">Precio de noche:</span> <span> S/.
+                                                {{cancha.precio_noche}} </span>
+                                        </div>
+
+                                        <!-- voley -->
+                                        <div class="col-12 pt-3">
+                                            <span class="voley fw-light">Detalles de voley</span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <span class="fw-bold h6">Medida:</span> <span>
+                                                {{cancha.largo_voley}}m x {{cancha.ancho_voley}}m </span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <span class="fw-bold h6">Precio de día:</span> <span> S/.
+                                                {{cancha.precio_dia_voley}} </span>
+                                        </div>
+
+                                        <div class="col-12 col-sm-4">
+                                            <span class="fw-bold h6">Precio de noche:</span> <span> S/.
+                                                {{cancha.precio_noche_voley}} </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="my-4 text-center">
+                                <a href="" class="fs-5" style="text-decoration: none; color: #000;"
+                                    data-bs-toggle="modal" data-bs-target="#portadaModal">
+                                    <i class="bi bi-upload"></i> &nbsp;
+                                    Agregar imagen
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="portadaModal" tabindex="-1" aria-labelledby="portadaModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex justify-content-center align-items-center row mb-3">
+                                        <div class="">
+                                            <input type="file" (change)="fileChangeEventCrop($event)" accept="image/*"
+                                                required>
+                                            <div class="mt-3">
+                                                <p>Solo se acepta imágenes *webp, *jpeg, *jpg y *png.
+                                                </p>
+                                            </div>
+                                        </div>
+    
+                                        <ng-container *ngIf="show_image">
+                                            <div class="col-6 mt-3">
+                                                <p class="text-center">Imagen original</p>
+                                                <image-cropper class="rounded" [imageChangedEvent]="imageChangedEvent"
+                                                    [maintainAspectRatio]="true" [aspectRatio]="16/9" format="png"
+                                                    (imageCropped)="imageCropped($event)"
+                                                    (imageLoaded)="imageLoaded($event)" (cropperReady)="cropperReady()"
+                                                    (loadImageFailed)="loadImageFailed()">
+                                                </image-cropper>
+                                            </div>
+    
+                                            <div class="col-6 mt-3">
+                                                <p class="text-center">Previsualización</p>
+                                                <img class="w-100 img-fluid rounded" [src]="croppedImage">
+    
+                                            </div>
+                                        </ng-container>
+                                        <div class="modal-body d-flex justify-content-center">
+                                            <div class="d-grid gap-2 col-6 mx-auto">
+                                                <button *ngIf="!load_btn" class="btn btn-primary bi-floppy button-upload"
+                                                    data-bs-dismiss="modal" type="button" (click)="subir_imagen()"
+                                                    [disabled]="file == undefined">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <div class="mb-3 pt-3">
+
+                                <ng-container *ngIf="load_data">
+                                    <div class="text-center">
+                                        <div class="spinner-border text-secondary" style="width: 3rem; height: 3rem"
+                                            role="status">
+                                        </div>
+                                        <h4 class="text-black-50"><small>Cargando...</small></h4>
+                                    </div>
+                                </ng-container>
+
+                                <ng-container *ngIf="!load_data">
+                                    <div class="" *ngIf="cancha.galeria">
+                                        <ng-container *ngIf="cancha.galeria.length === 0">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12 col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-body">
+                                                            <p class="mb-0 text-danger text-center">
+                                                                No hay imágenes diponibles
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="cancha.galeria.length >= 1">
+                                            <div class="row d-flex justify-content-center">
+                                                <div class="col-12 col-md-6 col-lg-4 mt-3"
+                                                    *ngFor="let item of cancha.galeria; let indice = index">
+                                                    <div class="card">
+                                                        <img [src]="url + 'obtener_galeria_cancha/' + item.imagen"
+                                                            class="card-img-top">
+                                                        <div class="card-body text-center py-2">
+                                                            <a data-bs-toggle="modal"
+                                                                [attr.data-bs-target]="'#delete-' + item._id"
+                                                                class="btn btn-danger" type="button">
+                                                                <i class="bi bi-trash"></i> &nbsp; ELiminar
+                                                            </a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal fade" id="delete-{{ item._id }}" tabindex="-1"
+                                                        style="display: none" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title text-center">
+                                                                        Eliminar imagen de galería
+                                                                    </h4>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal" aria-label="Close">
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body text-center">
+                                                                    <p class="fs-sm">
+                                                                        Desea eliminar esta imagen?
+                                                                    </p>
+                                                                    <p><img [src]="url + 'obtener_galeria_cancha/' + item.imagen"
+                                                                            style="width: 10vw;"></p>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button class="btn btn-secondary btn-sm bi-x-lg"
+                                                                        type="button" data-bs-dismiss="modal">
+                                                                        Cancelar
+                                                                    </button>
+                                                                    <button *ngIf="!load_btn_eliminar"
+                                                                        class="btn btn-danger btn-sm bi-trash-fill"
+                                                                        (click)="eliminar(item._id)" type="button"
+                                                                        data-bs-dismiss="modal">
+                                                                        Eliminar
+                                                                    </button>
+
+                                                                    <!-- Button with growing spinner and text -->
+                                                                    <button *ngIf="load_btn_eliminar" type="button"
+                                                                        class="btn btn-secondary">
+                                                                        <span class="spinner-grow spinner-grow-sm me-2"
+                                                                            role="status" aria-hidden="true"
+                                                                            disabled></span>
+                                                                        Eliminando...
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+
+                                </ng-container>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>

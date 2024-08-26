@@ -1,0 +1,286 @@
+<app-header></app-header>
+
+<div class="container-fluid" style="padding-top: 10vh">
+    <div class="mb-5 container d-flex justify-content-center">
+        <div class="py-3 px-4 p-sm-4 col-12 col-sm-8 rounded shadow">
+
+            <app-side-menu-register></app-side-menu-register>
+
+            <h2 class="text-center text-black-50 fw-bold pt-4">¡Regístrate Empresa!</h2>
+            <p class="text-center pb-2 text-black-50">
+                Cree una cuenta para ofrecer sus campos deportivos al público.<br>
+            </p>
+            <form #registroForm="ngForm" (ngSubmit)="registrar(registroForm)">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" placeholder="Ingrese nombre del grass" name="nombre"
+                            id="nombre" [(ngModel)]="empresa.nombre" required />
+                    </div>
+
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" placeholder="Ingrese la dirección de su grass"
+                            name="direccion" id="direccion" [(ngModel)]="empresa.direccion" required />
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 col-sm-6">
+                        <label for="email" class="form-label">Correo</label>
+                        <input type="email" class="form-control" placeholder="Ingrese su correo" name="email" id="email"
+                            [(ngModel)]="empresa.email" required />
+                    </div>
+
+                    <div class="col-6 col-sm-3 mt-3 mt-sm-0">
+                        <label for="telefono" class="form-label">WhatsApp</label>
+                        <input type="text" class="form-control" placeholder="Ingrese su WhatsApp" name="telefono"
+                            id="telefono" [(ngModel)]="empresa.telefono" required maxlength="9" />
+                    </div>
+
+                    <div class="col-6 col-sm-3 mt-3 mt-sm-0">
+                        <label for="telefono_fijo" class="form-label">Tel. fijo (opcional) </label>
+                        <input type="text" class="form-control" placeholder="Ingrese tel. fijo" name="telefono_fijo"
+                            id="telefono_fijo" maxlength="7" [(ngModel)]="empresa.telefono_fijo" />
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 col-sm-6">
+                        <label for="region" class="form-label">Región</label>
+                        <select id="region" class="form-select" name="region" [(ngModel)]="empresa.region"
+                            (change)="select_region()" required>
+                            <option value="" selected disabled>Seleccione</option>
+                            <option value="{{item.id}}" *ngFor="let item of regiones"> {{item.name}} </option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="provincia" class="form-label">Provincia</label>
+                        <select id="provincia" class="form-select" name="provincia" (change)="select_provincia()"
+                            [(ngModel)]="empresa.provincia" required>
+                            <option value="" selected disabled>Seleccione</option>
+                            <option value="{{item.id}}" *ngFor="let item of provincias"> {{item.name}} </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 col-sm-6">
+                        <label for="distrito" class="form-label">Distrito</label>
+                        <select id="distrito" class="form-select" name="distrito" [(ngModel)]="empresa.distrito"
+                            required>
+                            <option value="" selected disabled>Seleccione</option>
+                            <option value="{{item.name}}" *ngFor="let item of distritos"> {{item.name}} </option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="ubicacion" class="form-label">Ubicación</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="ubicacion" id="ubicacion"
+                                placeholder="Dirección en maps" [(ngModel)]="empresa.ubicacion" disabled required />
+                            <a class="btn btn-outline-primary" title="Buscar en el mapa" data-bs-toggle="modal"
+                                data-bs-target="#ubicacionModal">
+                                <i class="bi bi-geo-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="referencia" class="form-label">Referencia</label>
+                        <input type="text" class="form-control" placeholder="Ingrese una referencia" name="referencia"
+                            id="referencia" [(ngModel)]="empresa.referencia" required />
+                    </div>
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="horario_atencion" class="form-label">Horario de atencion</label>
+                        <input type="text" class="form-control" placeholder="Ingrese una horario de atencion"
+                            name="horario_atencion" id="horario_atencion" [(ngModel)]="empresa.horario_atencion"
+                            required />
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 col-sm-6">
+                        <label for="password1" class="form-label">Contraseña</label>
+                        <input [type]="password" class="form-control" placeholder="Ingrese su contraseña"
+                            (keyup)="compare_password()" name="password1" id="password1" [(ngModel)]="password1"
+                            required />
+                    </div>
+
+                    <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+                        <label for="password" class="form-label">Confirmar contraseña</label>
+                        <div class="input-group">
+                            <input [type]="password" class="form-control" id="password"
+                                placeholder="Confirme su contraseña" name="password" [(ngModel)]="empresa.password"
+                                required (keyup)="compare_password()" />
+                            <a class="btn btn-outline-primary" (click)="onClickPass()">
+                                <i class="bi bi-eye-fill" aria-hidden="true" *ngIf="!show"></i>
+                                <i class="bi bi-eye-slash-fill" aria-hidden="true" *ngIf="show"></i>
+                            </a>
+                        </div>
+
+                        <div class="alert alert-danger mt-2 text-center" role="alert" *ngIf="alert_pass">
+                            <em>Las contraseñas no coinciden</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check d-flex justify-content-center mt-4">
+                    <input class="form-check-input" type="checkbox" name="recordar" id="flexCheckDefault"
+                        [(ngModel)]="recordar">
+                    <label class="form-check-label" for="flexCheckDefault"> &nbsp; &nbsp;
+                        Recordar sesión
+                    </label>
+                </div>
+
+                <div class="pt-2 text-center">
+                    <small>Al dar click en <strong>Registrar</strong> aceptas nuestros
+                        <a [routerLink]="['/terminos-condiciones']" style="cursor: pointer; 
+                        color: #6F42C1;
+                        font-weight: bold;
+                        text-decoration: none;" target="_blank">
+                            Términos y condiciones
+                        </a> y
+                        <a [routerLink]="['/politica-privacidad']" style="cursor: pointer; 
+                        color: #6F42C1;
+                        font-weight: bold;
+                        text-decoration: none;" target="_blank">
+                            Políticas de privacidad
+                        </a>
+                    </small>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="bi bi-arrow-right"></i> &nbsp; Continuar
+                    </button>
+                </div>
+
+                <!-- Modal ubicacion-->
+                <div class="modal fade" id="ubicacionModal" tabindex="-1" aria-labelledby="ubicacionModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content shadow">
+                            <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+
+                                <p class="text-center text-secondary">Seleccione su ubicación en el mapa</p>
+
+                                <div class="map-container rounded">
+                                    <google-map height="400px" width="100%" [center]="center" [zoom]="zoom"
+                                        [options]="mapOptions" (mapClick)="onMapClick($event)">
+                                        <map-marker *ngIf="selectedLocation" [position]="selectedLocation"></map-marker>
+                                    </google-map>
+                                </div>
+
+                                <div class="d-grid gap-2 col-6 mx-auto mt-3">
+                                    <button class="btn btn-primary" type="button"
+                                        data-bs-dismiss="modal">Aceptar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="font-size-sm pt-4 text-center">
+                    ¿Ya tienes cuenta?
+                    <a class="fw-bold text-decoration-none text-success" [routerLink]="['/login']">
+                        Iniciar sesión
+                    </a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Características</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ng-container>
+                    <h4 class="card-title text-center" style="font-weight: 300;">
+                        Registre las características de su grass
+                    </h4>
+
+                    <!-- Chek iluminación LED -->
+                    <div class="row mx-2 mx-sm-4 py-3">
+                        <div class="form-check col-12 col-sm-4">
+                            <input class="form-check-input" type="checkbox" id="flexCheckIlumination" name="iluminacion"
+                                [(ngModel)]="car.iluminacion">
+                            <label class="form-check-label" for="flexCheckIlumination">
+                                Iluminación LED
+                            </label>
+                        </div>
+
+                        <!-- Check Techado -->
+                        <div class="form-check col-12 col-sm-4">
+                            <input class="form-check-input" type="checkbox" id="flexCheckTechado" name="techado"
+                                [(ngModel)]="car.techado">
+                            <label class="form-check-label" for="flexCheckTechado">
+                                Techado
+                            </label>
+                        </div>
+
+                        <!-- Check Garaje -->
+                        <div class="form-check col-12 col-sm-4">
+                            <input class="form-check-input" type="checkbox" id="flexCheckGaraje" name="techado"
+                                [(ngModel)]="car.garaje">
+                            <label class="form-check-label" for="flexCheckGaraje">
+                                Garaje
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="row mx-2 mx-sm-4 py-3">
+                        <div class="input-group mb-3 col-6">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Canchas de fútbol</span>
+                            <input type="number" class="form-control" aria-label="Sizing example input"
+                                aria-describedby="inputGroup-sizing-default" min="0" name="canchas_futsal"
+                                [(ngModel)]="car.canchas_futsal">
+                        </div>
+
+                        <div class="input-group mb-3 col-12 col-sm-6">
+                            <span class="input-group-text" id="inputGroup-sizing-default">Canchas de voley</span>
+                            <input type="number" class="form-control" aria-label="Sizing example input"
+                                aria-describedby="inputGroup-sizing-default" min="0" name="cancas_voley"
+                                [(ngModel)]="car.canchas_voley">
+                        </div>
+
+                        <div class="alert alert-warning mt-2 text-center" role="alert">
+                            <span class="fs-6 fw-light">Si su empresa tiene
+                                <span class="fw-bold">cancha mixta</span>,
+                                debe
+                                <span class="fw-bold">sumar 1 a cada tipo de cancha</span>.
+                            </span>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button *ngIf="!load_register" class="btn btn-primary" (click)="registrar(registroForm)"
+                    data-bs-dismiss="modal" [disabled]="registroForm.invalid || !valid">
+                    <i class="bi bi-plus-circle"></i> &nbsp; Registrar
+                </button>
+                <button *ngIf="load_register" class="btn btn-primary" type="button" disabled>
+                    <span class="spinner-border spinner-border-sm" aria-hidden="true"></span> &nbsp;
+                    <span role="status">Registrando...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>
