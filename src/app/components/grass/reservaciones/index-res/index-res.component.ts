@@ -165,6 +165,23 @@ export class IndexResComponent implements OnInit {
     );
   }
 
+  actualizar_reserva_total_grass(id: string, total: number) {
+    this._userService.actualizar_reserva_total_grass(id, total, this.token).subscribe({
+      next: (res) => {
+
+      },
+      error: (err) => {
+
+      }
+    });
+  }
+
+  calcularPrecioMixto(item: any): number {
+    const horasDia = item.cancha.hora_noche - item.hora_inicio;
+    const horasNoche = item.hora_fin - item.cancha.hora_noche;
+    return (horasDia * item.cancha.precio_dia) + (horasNoche * item.cancha.precio_noche);
+  }
+
   logout() {
     location.reload();
     localStorage.clear();

@@ -198,6 +198,11 @@ export class UserService {
     return this._http.post(this.url + 'registro_reservacion_grass', data, { headers: headers });
   }
 
+  actualizar_reserva_total_grass(id: any, total: number, token: any): Observable<any> {
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json', 'authorization': token });
+    return this._http.put(this.url + 'actualizar_reserva_total_grass/' + id, {data: total}, {headers: headers});
+  }
+
   obtener_reservaciones_empresa(id: any, token: any): Observable<any> {
     let headers = new HttpHeaders({ 'Content-Type': 'application/json', 'authorization': token });
     return this._http.get(this.url + 'obtener_reservaciones_empresa/' + id, { headers: headers });

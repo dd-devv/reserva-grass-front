@@ -29,7 +29,7 @@
 
 
             <div class="row">
-                <div class="py-2 col-md-6 col-sm-12">
+                <div class="py-2 col-6 col-md-4">
                     <label for="tipo" class="form-label text-secondary">Tipo de cancha</label>
                     <select class="form-select" aria-label="Default select example" id="tipo" name="tipo"
                         [(ngModel)]="cancha.tipo" (change)="select_tipo()" required>
@@ -40,24 +40,33 @@
                     </select>
                 </div>
 
-                <div class="py-2 col-md-6 col-sm-12">
-                    <label for="precio_reservacion" class="form-label text-secondary">Precio de reservación * hora
-                        (soles)</label>
+                <div class="py-2 col-6 col-md-4">
+                    <label for="precio_reservacion" class="form-label text-secondary">Precio de reservación</label>
                     <input type="number" class="form-control" min="1"
                         id="precio_reservacion" name="precio_reservacion" [(ngModel)]="cancha.precio_reservacion"
                         required placeholder="0">
                 </div>
 
+                <div class="py-2 col-6 col-md-4">
+                    <label for="hora_noche" class="form-label text-secondary">Cobrar precio de noche</label>
+                    <select class="form-select" aria-label="Default select example" id="hora_noche" name="hora_noche" [(ngModel)]="cancha.hora_noche" required>
+                        <option selected disabled value="">Seleccione</option>
+                        <option value="17">5 pm</option>
+                        <option value="18">6 pm</option>
+                        <option value="19">7 pm</option>
+                      </select>
+                </div>
+
                 <!--? La cancha es de tipo: voley / futsal -->
                 <div class="row">
                     <ng-container *ngIf="!field_extra">
-                        <div class="py-2 col-lg-3 col-md-6 col-sm-12">
+                        <div class="py-2 col-6 col-md-4 col-lg-3">
                             <label for="largo" class="form-label text-secondary">Largo (metros)</label>
                             <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched" min="1"
                                 id="largo" name="largo" [(ngModel)]="cancha.largo" required placeholder="P. ej. 8.5">
                         </div>
 
-                        <div class="py-2 col-lg-3 col-md-6 col-sm-12">
+                        <div class="py-2 col-6 col-md-4 col-lg-3">
                             <label for="ancho" class="form-label text-secondary">Ancho (metros)</label>
                             <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched" min="1"
                                 id="ancho" name="ancho" [(ngModel)]="cancha.ancho" required placeholder="P. ej. 6">
@@ -65,14 +74,14 @@
                     </ng-container>
 
                     <ng-container *ngIf="!field_extra">
-                        <div class="py-2 col-lg-3 col-md-6 col-sm-12">
-                            <label for="precio_dia" class="form-label text-secondary">Precio de día (soles)</label>
+                        <div class="py-2 col-6 col-md-4 col-lg-3">
+                            <label for="precio_dia" class="form-label text-secondary">Precio día (soles)</label>
                             <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched" min="1"
                                 id="precio_dia" name="precio_dia" [(ngModel)]="cancha.precio_dia" required
                                 placeholder="0">
                         </div>
-                        <div class="py-2 col-lg-3 col-md-6 col-sm-12">
-                            <label for="precio_noche" class="form-label text-secondary">Precio de noche (soles)</label>
+                        <div class="py-2 col-6 col-md-4 col-lg-3">
+                            <label for="precio_noche" class="form-label text-secondary">Precio noche (soles)</label>
                             <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched" min="1"
                                 id="precio_noche" name="precio_noche" [(ngModel)]="cancha.precio_noche" required
                                 placeholder="0">
@@ -89,21 +98,21 @@
                             <span class="futsal fw-light">Detalles de futsal/fútbol</span>
                         </div>
                         <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="largo" class="form-label text-secondary">Largo (metros)</label>
                                 <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched"
                                     min="1" id="largo" name="largo" [(ngModel)]="cancha.largo" required
                                     placeholder="P. ej. 8.5">
                             </div>
 
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="ancho" class="form-label text-secondary">Ancho (metros)</label>
                                 <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched"
                                     min="1" id="ancho" name="ancho" [(ngModel)]="cancha.ancho" required
                                     placeholder="P. ej. 6">
                             </div>
 
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="precio_dia" class="form-label text-secondary">
                                     Precio de día (soles)
                                 </label>
@@ -112,7 +121,7 @@
                                     placeholder="30">
                             </div>
 
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="precio_noche" class="form-label text-secondary">
                                     Precio de noche (soles)
                                 </label>
@@ -128,21 +137,21 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="largo_voley" class="form-label text-secondary">Largo (metros)</label>
                                 <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched"
                                     min="1" id="largo_voley" name="largo_voley" [(ngModel)]="cancha.largo_voley"
                                     required placeholder="P. ej. 8">
                             </div>
 
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="ancho_voley" class="form-label text-secondary">Ancho (metros)</label>
                                 <input type="number" class="form-control fw-light ng-pristine ng-invalid ng-touched"
                                     min="1" id="ancho_voley" name="ancho_voley" [(ngModel)]="cancha.ancho_voley"
                                     required placeholder="P. ej. 5">
                             </div>
 
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="precio_dia_voley" class="form-label text-secondary">
                                     Precio de día (soles)
                                 </label>
@@ -151,7 +160,7 @@
                                     [(ngModel)]="cancha.precio_dia_voley" required placeholder="25">
                             </div>
 
-                            <div class="col-lg-3 col-md-6 col-sm-12 py-2">
+                            <div class="col-6 col-md-4 col-lg-3 py-2">
                                 <label for="precio_noche_voley" class="form-label text-secondary">
                                     Precio de noche (soles)
                                 </label>

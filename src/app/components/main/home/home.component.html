@@ -88,7 +88,7 @@
                             </div>
 
                             <div class="card-body">
-                                <p class="text-center">
+                                <p class="text-center col-12 text-truncate" title="{{item.empresa.direccion}}">
                                     <a href="{{ item.empresa.ubicacion }}" target="_blank" style="
                         text-decoration: none;
                         color: #095c3d;
@@ -102,7 +102,7 @@
                                     </a>
                                 </p>
 
-                                <p class="text-center" *ngIf="item.empresa.referencia">
+                                <p class="text-center col-12 text-truncate" title="{{item.empresa.referencia}}" *ngIf="item.empresa.referencia">
                                     <small>
                                         ({{item.empresa.referencia}})
                                     </small>
@@ -278,7 +278,7 @@
                             </div>
 
                             <div class="card-body">
-                                <p class="text-center">
+                                <p class="text-center col-12 text-truncate" title="{{item.empresa.direccion}}">
                                     <a href="{{ item.empresa.ubicacion }}" target="_blank" style="
                         text-decoration: none;
                         color: #095c3d;
@@ -292,7 +292,7 @@
                                     </a>
                                 </p>
 
-                                <p class="text-center" *ngIf="item.empresa.referencia">
+                                <p class="text-center col-12 text-truncate" title="{{item.empresa.referencia}}" *ngIf="item.empresa.referencia">
                                     <small>
                                         ({{item.empresa.referencia}})
                                     </small>
@@ -422,7 +422,7 @@
                         </div>
 
                         <div class="card-body">
-                            <p class="text-center mb-0">
+                            <p class="text-center mb-0 col-12 text-truncate" title="{{item.empresa.direccion}}">
                                 <a href="{{ item.empresa.ubicacion }}" target="_blank" style="
                     text-decoration: none;
                     color: #095c3d;
@@ -435,7 +435,7 @@
                                     <i class="bi bi-arrow-up-right-circle" style="color: #095c3d"></i>
                                 </a>
                             </p>
-                            <p class="text-center" *ngIf="item.empresa.referencia">
+                            <p class="text-center col-12 text-truncate" title="{{item.empresa.referencia}}" *ngIf="item.empresa.referencia">
                                 <small>
                                     ({{item.empresa.referencia}})
                                 </small>

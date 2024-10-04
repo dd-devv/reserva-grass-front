@@ -260,13 +260,14 @@
       <h4 class="mt-4 fw-bold text-center">Listado de reservaciones</h4>
 
       <div class="table-responsive">
-        <table class="table table-sm table-striped table-hover">
+        <table class="table table-sm table-borderless table-hover">
           <thead>
             <tr>
               <th scope="col">N°</th>
               <th scope="col">Cliente</th>
               <th scope="col">Teléfono</th>
               <th scope="col">Monto</th>
+              <th scope="col">Opcs</th>
               <th scope="col">Cancha_reservada</th>
               <th scope="col">Fecha_reserva</th>
               <th scope="col">Hora_reservacion</th>
@@ -276,10 +277,19 @@
 
           <tbody class="table-group-divider" *ngIf="!load_data">
             <tr *ngFor="let item of reservacionesOtras; let i = index">
-              <th scope="row"> {{i+1}} </th>
+              <th scope="row"> {{reservaciones.length - i}} </th>
               <td> {{ item.cliente.nombres }} </td>
               <td> {{ item.cliente.telefono }} </td>
               <td> S/. {{item.subtotal}} </td>
+              <td>
+                <button *ngIf="item.estado == 'Reservado'" type="button" class="btn btn-primary btn-sm"
+                  data-bs-toggle="modal" [attr.data-bs-target]="'#confirmarModal-' + item._id">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <button *ngIf="item.estado == 'Finalizado'" type="button" class="btn btn-light btn-sm">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+              </td>
               <td> {{item.cancha.nombre}} </td>
               <td> {{ item.fecha | date: 'mediumDate' }} </td>
               <td> {{item.hora_inicio}}:00 a
@@ -289,6 +299,104 @@
                   style="background-color: rgb(0, 192, 86);">Reservado</span>
                 <span *ngIf="item.estado == 'Finalizado'" class="badge rounded-pill text-bg-danger">Finalizado</span>
               </td>
+
+              <!-- Modal -->
+              <div class="modal fade" id="confirmarModal-{{ item._id }}" tabindex="-1"
+                aria-labelledby="confirmarModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+
+                  <!-- Precio para horas de dia -->
+                  <div *ngIf="item.hora_inicio < item.cancha.hora_noche && item.hora_fin < item.cancha.hora_noche" class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Confirmar pago completo</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="text-center">
+                        Precio total: S/. {{item.cancha.precio_dia * (item.hora_fin - item.hora_inicio) }}
+                      </p>
+                      <p class="text-center">
+                        Adelantado: S/. {{item.subtotal }}
+                      </p>
+                      <p class="text-center fs-5 mb-0 fw-bold">
+                        Restante: S/. {{item.cancha.precio_dia * (item.hora_fin - item.hora_inicio) - item.subtotal}}
+                      </p>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                      <button *ngIf="item.cancha.precio_dia * (item.hora_fin - item.hora_inicio) - item.subtotal > 0"
+                        type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        (click)="actualizar_reserva_total_grass(item._id, item.cancha.precio_dia * (item.hora_fin - item.hora_inicio))">
+                        Confirmar pago
+                      </button>
+                      <button *ngIf="item.cancha.precio_dia * (item.hora_fin - item.hora_inicio) - item.subtotal <= 0"
+                        type="button" class="btn btn-light">
+                        Confirmado
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Precios para horas de noche -->
+                  <div *ngIf="item.hora_inicio >= item.cancha.hora_noche && item.hora_fin > item.cancha.hora_noche" class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Confirmar pago completo</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="text-center">
+                        Precio total: S/. {{item.cancha.precio_noche * (item.hora_fin - item.hora_inicio) }}
+                      </p>
+                      <p class="text-center">
+                        Adelantado: S/. {{item.subtotal }}
+                      </p>
+                      <p class="text-center fw-bold fs-5 mb-0">
+                        Restante: S/. {{item.cancha.precio_noche * (item.hora_fin - item.hora_inicio) - item.subtotal}}
+                      </p>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                      <button *ngIf="item.cancha.precio_noche * (item.hora_fin - item.hora_inicio) - item.subtotal > 0"
+                        type="button" class="btn btn-primary" data-bs-dismiss="modal"
+                        (click)="actualizar_reserva_total_grass(item._id, item.cancha.precio_noche * (item.hora_fin - item.hora_inicio))">
+                        Confirmar pago
+                      </button>
+                      <button *ngIf="item.cancha.precio_noche * (item.hora_fin - item.hora_inicio) - item.subtotal <= 0"
+                        type="button" class="btn btn-light">
+                        Confirmado
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Precios para reservas que cruzan hora_noche -->
+                  <div *ngIf="item.hora_inicio < item.cancha.hora_noche && item.hora_fin > item.cancha.hora_noche"
+                    class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Confirmar pago completo</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <p class="text-center">
+                        Precio total: S/. {{calcularPrecioMixto(item)}}
+                      </p>
+                      <p class="text-center">
+                        Adelantado: S/. {{item.subtotal}}
+                      </p>
+                      <p class="text-center fs-5 mb-0 fw-bold">
+                        Restante: S/. {{calcularPrecioMixto(item) - item.subtotal}}
+                      </p>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                      <button *ngIf="calcularPrecioMixto(item) - item.subtotal > 0" type="button"
+                        class="btn btn-primary" data-bs-dismiss="modal"
+                        (click)="actualizar_reserva_total_grass(item._id, calcularPrecioMixto(item))">
+                        Confirmar pago
+                      </button>
+                      <button *ngIf="calcularPrecioMixto(item) - item.subtotal <= 0" type="button"
+                        class="btn btn-light">
+                        Confirmado
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </tr>
           </tbody>
         </table>

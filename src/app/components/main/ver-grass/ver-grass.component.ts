@@ -16,7 +16,7 @@ interface BotonHora {
 @Component({
   selector: 'app-ver-grass',
   templateUrl: './ver-grass.component.html',
-  styleUrls: ['./../home/home.component.css', './ver-grass.component.css']
+  styleUrls: ['./../home/home.component.css', './ver-grass.component.css'],
 })
 export class VerGrassComponent implements OnInit {
   public id: any;
@@ -86,7 +86,12 @@ export class VerGrassComponent implements OnInit {
     for (let i = 0; i <= 7; i++) {
       const dia = new Date(primerDia);
       dia.setDate(primerDia.getDate() + i);
-      this.diasSemana.push({ nombre: dia.toLocaleDateString('es-ES', { weekday: 'long' }).slice(0, 3), fecha: dia });
+      this.diasSemana.push({
+        nombre: dia
+          .toLocaleDateString('es-ES', { weekday: 'long' })
+          .slice(0, 3),
+        fecha: dia,
+      });
     }
   }
 
@@ -94,7 +99,7 @@ export class VerGrassComponent implements OnInit {
     this.intervalosHorarios = [];
     for (let i = 5; i < 24; i++) {
       const inicio = i < 10 ? `0${i}:00` : `${i}:00`;
-      const fin = (i + 1) < 10 ? `0${i + 1}:00` : `${i + 1}:00`;
+      const fin = i + 1 < 10 ? `0${i + 1}:00` : `${i + 1}:00`;
 
       this.intervalosHorarios.push({ inicio, fin });
     }
@@ -113,7 +118,8 @@ export class VerGrassComponent implements OnInit {
         const hora = inicio;
 
         const esDiaActual = i === primerDiaSemana;
-        const est: string = (esDiaActual && ahora.getHours() >= j) ? 'Pasado' : 'Libre';
+        const est: string =
+          esDiaActual && ahora.getHours() >= j ? 'Pasado' : 'Libre';
         const disponible = esDiaActual ? ahora.getHours() < j : true;
 
         const id = `00${i}${j}`.slice(-4); // Asegurar que el ID tenga cuatro dígitos
@@ -124,17 +130,19 @@ export class VerGrassComponent implements OnInit {
     }
   }
 
-
   onHoraSeleccionada(filaIndex: number, columnaIndex: number) {
     const boton = this.botonesHoras[filaIndex][columnaIndex];
-    if ( this.horasReserva > 4 || this.horasReserva < 1 ) {
+    if (this.horasReserva > 4 || this.horasReserva < 1) {
       this._toastrService.error('Se permite como máximo 4 horas!', 'ERROR');
       this.horasReserva = 1;
       return;
     }
-    
+
     if (this.horasFinal > 23) {
-      this._toastrService.error('Solo se puede resrevar hasta las 23:00!', 'ERROR');
+      this._toastrService.error(
+        'Solo se puede resrevar hasta las 23:00!',
+        'ERROR'
+      );
       return;
     }
 
@@ -175,28 +183,25 @@ export class VerGrassComponent implements OnInit {
   init_data() {
     this.load_data = true;
 
-    this._userService.obtener_empresa_publico(this.id).subscribe(
-      response => {
-        if (response.data == undefined) {
-          // Manejo de datos indefinidos
-        } else {
-          this.empresa = response.data;
+    this._userService.obtener_empresa_publico(this.id).subscribe((response) => {
+      if (response.data == undefined) {
+        // Manejo de datos indefinidos
+      } else {
+        this.empresa = response.data;
 
-          this._userService.obtener_canchas(this.id).subscribe(
-            response => {
-              if (response.data == undefined) {
-                this.load_data = false;
-                this.btn_crear = true;
-              } else if (response.data != undefined) {
-                this.btn_crear = false;
-                this.canchas = response.data;
-                this.load_data = false;
-              }
-            }
-          );
-        }
+        this._userService.obtener_canchas(this.id).subscribe((response) => {
+          if (response.data == undefined) {
+            this.load_data = false;
+            this.btn_crear = true;
+          } else if (response.data != undefined) {
+            this.btn_crear = false;
+            this.canchas = response.data;
+            this.load_data = false;
+            this.click_ver(response.data[0]._id);
+          }
+        });
       }
-    );
+    });
   }
 
   click_ver(id: any) {
@@ -204,83 +209,87 @@ export class VerGrassComponent implements OnInit {
     this.load_btn_ver = true;
     this.ver_caracteristicas = !this.ver_caracteristicas;
 
-    this._userService.obtener_cancha_publico(id).subscribe(
-      response => {
-        if (response === undefined) {
-          this.cancha_ver = undefined;
-          this.load_btn_ver = false;
-        } else {
-          this.cancha_ver = response.data;
+    this._userService.obtener_cancha_publico(id).subscribe((response) => {
+      if (response === undefined) {
+        this.cancha_ver = undefined;
+        this.load_btn_ver = false;
+      } else {
+        this.cancha_ver = response.data;
 
-          this._userService.obtener_reservaciones_public(this.cancha_ver._id).subscribe(
-            response => {
-              this.reservaciones = response.data;
+        this._userService
+          .obtener_reservaciones_public(this.cancha_ver._id)
+          .subscribe((response) => {
+            this.reservaciones = response.data;
 
-              if (this.reservaciones.length >= 1) {
-                const ahora = new Date();
-                const primerDiaSemana = ahora.getDay();
-              
-                for (let i = primerDiaSemana; i <= primerDiaSemana + 7; i++) {
-                  const fila: BotonHora[] = [];
-              
-                  for (let j = 5; j < 24; j++) {
-                    const inicio = j < 10 ? `0${j}` : `${j}`;
-                    const fecha = new Date(ahora);
-                    fecha.setDate(ahora.getDate() + (i - primerDiaSemana));
-                    const hora = inicio;
-              
-                    let estadoBoton = 'Libre';
-                    let disponibleBtn = true;
-              
-                    for (let k = 0; k < this.reservaciones.length; k++) {
-                      const reservacion = this.reservaciones[k];
-                      const reservacionFecha = new Date(reservacion.fecha);
-                      const reservacionHoraInicio = reservacion.hora_inicio;
-                      const reservacionHoraFin = reservacion.hora_fin;
-              
-                      if (
-                        fecha.getDate() === reservacionFecha.getDate() &&
-                        fecha.getMonth() === reservacionFecha.getMonth() &&
-                        fecha.getFullYear() === reservacionFecha.getFullYear() &&
-                        parseInt(hora) >= parseInt(reservacionHoraInicio) &&
-                        parseInt(hora) < parseInt(reservacionHoraFin)
-                      ) {
-                        estadoBoton = reservacion.estado;
-                        disponibleBtn = false;
-                        break;
-                      }
-                    }
-              
-                    const esDiaActual = i === primerDiaSemana;
-                    const est: string = (esDiaActual && ahora.getHours() >= j) ? 'Pasado' : estadoBoton;
-                    const disponible = esDiaActual ? ahora.getHours() < j : true;
+            if (this.reservaciones.length >= 1) {
+              const ahora = new Date();
+              const primerDiaSemana = ahora.getDay();
 
-                    if (!disponible) {
+              for (let i = primerDiaSemana; i <= primerDiaSemana + 7; i++) {
+                const fila: BotonHora[] = [];
+
+                for (let j = 5; j < 24; j++) {
+                  const inicio = j < 10 ? `0${j}` : `${j}`;
+                  const fecha = new Date(ahora);
+                  fecha.setDate(ahora.getDate() + (i - primerDiaSemana));
+                  const hora = inicio;
+
+                  let estadoBoton = 'Libre';
+                  let disponibleBtn = true;
+
+                  for (let k = 0; k < this.reservaciones.length; k++) {
+                    const reservacion = this.reservaciones[k];
+                    const reservacionFecha = new Date(reservacion.fecha);
+                    const reservacionHoraInicio = reservacion.hora_inicio;
+                    const reservacionHoraFin = reservacion.hora_fin;
+
+                    if (
+                      fecha.getDate() === reservacionFecha.getDate() &&
+                      fecha.getMonth() === reservacionFecha.getMonth() &&
+                      fecha.getFullYear() === reservacionFecha.getFullYear() &&
+                      parseInt(hora) >= parseInt(reservacionHoraInicio) &&
+                      parseInt(hora) < parseInt(reservacionHoraFin)
+                    ) {
+                      estadoBoton = reservacion.estado;
                       disponibleBtn = false;
+                      break;
                     }
-              
-                    const id = `00${i}${j}`.slice(-4); // Asegurar que el ID tenga cuatro dígitos
-                    const boton: BotonHora = { estado: est, fecha, hora, disponible: disponibleBtn, id };
-                    fila.push(boton);
                   }
-              
-                  this.botonesHoras.push(fila);
+
+                  const esDiaActual = i === primerDiaSemana;
+                  const est: string =
+                    esDiaActual && ahora.getHours() >= j
+                      ? 'Pasado'
+                      : estadoBoton;
+                  const disponible = esDiaActual ? ahora.getHours() < j : true;
+
+                  if (!disponible) {
+                    disponibleBtn = false;
+                  }
+
+                  const id = `00${i}${j}`.slice(-4); // Asegurar que el ID tenga cuatro dígitos
+                  const boton: BotonHora = {
+                    estado: est,
+                    fecha,
+                    hora,
+                    disponible: disponibleBtn,
+                    id,
+                  };
+                  fila.push(boton);
                 }
-              } else {
-                this.inicializarBotonesHoras();
 
+                this.botonesHoras.push(fila);
               }
-
-
+            } else {
+              this.inicializarBotonesHoras();
             }
-          );
+          });
 
-          this.calcularDiasSemana();
-          this.calcularIntervalosHorarios();
-          this.load_btn_ver = false;
-        }
+        this.calcularDiasSemana();
+        this.calcularIntervalosHorarios();
+        this.load_btn_ver = false;
       }
-    );
+    });
     localStorage.clear();
     localStorage.setItem('id_cancha', id);
   }

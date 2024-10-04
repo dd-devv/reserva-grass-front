@@ -20,6 +20,7 @@ export class CreateCanchasComponent implements OnInit {
   public procede = false;
   public cancha: any = {
     tipo: '',
+    hora_noche: ''
     //largo: 0,
     //ancho: 0,
     //precio_dia: 0,
@@ -85,6 +86,7 @@ export class CreateCanchasComponent implements OnInit {
           ancho_voley: this.cancha.ancho_voley,
           precio_dia: this.cancha.precio_dia,
           precio_reservacion: this.cancha.precio_reservacion,
+          hora_noche: this.cancha.hora_noche,
           precio_noche: this.cancha.precio_noche,
           precio_dia_voley: this.cancha.precio_dia_voley,
           precio_noche_voley: this.cancha.precio_noche_voley,
@@ -98,6 +100,7 @@ export class CreateCanchasComponent implements OnInit {
           largo: this.cancha.largo,
           ancho: this.cancha.ancho,
           precio_reservacion: this.cancha.precio_reservacion,
+          hora_noche: this.cancha.hora_noche,
           precio_dia: this.cancha.precio_dia,
           precio_noche: this.cancha.precio_noche,
         };

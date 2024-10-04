@@ -159,3 +159,12 @@
   text-align: center;
   background: #ffffff;
 }
+
+@media (min-width: 768px) and (max-width: 900px) {
+  ._btn-responsive .btn-text {
+      display: none;
+  }
+  ._btn-responsive {
+      width: 70px; /* Ajusta el ancho del botón si es necesario */
+  }
+}
