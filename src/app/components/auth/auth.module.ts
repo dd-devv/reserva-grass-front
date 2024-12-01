@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { VerifyMailComponent } from './verify-mail/verify-mail.component';
-import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { RouterModule } from '@angular/router';
@@ -23,7 +22,6 @@ import { GoogleMapsModule } from '@angular/google-maps';
   ],
   imports: [
     CommonModule,
-    SharedModule,
     FormsModule,
     GoogleMapsModule,
     AppRoutingModule,

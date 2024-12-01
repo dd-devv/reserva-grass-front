@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { GoogleMapsModule } from '@angular/google-maps';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SharedModule } from './components/shared/shared.module';
 import { AuthModule } from './components/auth/auth.module';
 import { MainModule } from './components/main/main.module';
 import { ToastrModule } from 'ngx-toastr';
@@ -21,7 +20,6 @@ registerLocaleData(localeEs, "es");
   imports: [
     BrowserModule,
     AppRoutingModule,
-    SharedModule,
     AuthModule,
     MainModule,
     HttpClientModule,
